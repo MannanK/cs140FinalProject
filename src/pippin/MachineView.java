@@ -311,7 +311,7 @@ public class MachineView extends Observable {
 								"Warning",
 								JOptionPane.OK_OPTION);
 			}
-		} else {// source file does not exist
+		} else if (source != null){// source file does not exist
 			JOptionPane.showMessageDialog(
 					frame, 
 					"The source file has problems.\n" +
@@ -358,7 +358,7 @@ public class MachineView extends Observable {
 		setChanged();
 		notifyObservers("Load Code");
 
-		if(!str.equals("success")) {
+		if(str != null && !str.equals("success")) {
 			JOptionPane.showMessageDialog(
 					frame, 
 					"The file being selected has problems.\n" +
@@ -451,15 +451,15 @@ public class MachineView extends Observable {
 				halt();
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
-	
+
 	public void setPeriod(int period) { 
-        timer.setDelay(period); 
-    }
-	
+		timer.setDelay(period); 
+	}
+
 	/**
 	 * Main method that drives the whole simulator
 	 * @param args command line arguments are not used

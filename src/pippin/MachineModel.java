@@ -275,41 +275,42 @@ public class MachineModel extends Observable {
 	 * code to look up value for target location and length as well
 	 */
 	public void copy(int arg) {
+
 		int source = memory.getData(arg);
-		int target = memory.getData(arg+1);
-		int length = memory.getData(arg+2);
-		int sLength = source+length-1;
-		int tLength = target+length-1;
-		int maxAddress = Memory.DATA_SIZE-1;
+		int target = memory.getData(arg + 1);
+		int length = memory.getData(arg + 2);
 
-		/*if((source >= arg && source <= arg+2) || (target >= arg && target <= arg+2)) {
-			throw new IllegalArgumentException("The instruction would corrupt arg");*/
+		// The Range class was created to make condition checks much cleaner; 
+		// see the Javadoc therein for full documentation.
+		Range sRange = new Range(source, source + length - 1);
+		Range tRange = new Range(target, target + length - 1);
+		Range addresses = new Range(0, Memory.DATA_SIZE - 1);
 
-		if((arg >= source && arg <= sLength) || (arg+1 >= source && arg+1 <= sLength) 
-				|| (arg+2 >= source && arg+2 <= sLength) || (arg >= target && 
-				arg <= tLength) || (arg+1 >= target && arg+1 <= tLength) 
-				|| (arg+2 >= target && arg+2 <= tLength)) {
-			
-			throw new IllegalArgumentException("The instruction would corrupt arg");
+		if (sRange.contains(arg) || sRange.contains(arg + 1) || sRange.contains(arg + 2) ||
+				tRange.contains(arg) || tRange.contains(arg + 1) || tRange.contains(arg + 2)) {
+			throw new IllegalArgumentException("The instruction would corrupt arg.");
+		}
 
-		} else if(source < 0 || source > maxAddress || sLength < 0 || sLength > maxAddress 
-				|| target < 0 || target > maxAddress || tLength < 0 || tLength > maxAddress) {
-			
-			throw new IllegalArgumentException("The source range or target ranges go out"
-					+ "of the memory addresses");
-			
-		} else if(source < target) {
-			source = source+length-1;
-			target = target+length-1;
+		if (!addresses.contains(source) || !addresses.contains(source + length) ||
+				!addresses.contains(target) || !addresses.contains(target + length)) {
+			throw new IllegalArgumentException("The source range or target range is outside"
+					+ " the range of memory addresses.");
+		}
 
-			for(int i=0; i < length; i++) {
-				memory.setData(target - i, memory.getData(source - i));
+		// working down
+		if (source < target) {
+			for (int i = length, j = 1; i > 0; i--, j++) {
+				memory.setData(target + length - j, memory.getData(source + length - j));
 			}
-		} else {
-			for(int i=0; i < length; i++) {
+		}
+		
+		// working up
+		else {
+			for (int i = 0; i < length; i++) {
 				memory.setData(target + i, memory.getData(source + i));
 			}
 		}
+
 	}
 	
 	public void step() {
