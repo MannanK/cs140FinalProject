@@ -23,9 +23,9 @@ public class Memory {
 	}
 	
 	public void clear() {
-		changedIndex = -1;
-		for(int i=0; i < data.length; i++) {
-			data[i] = 0;
-		}
-	}
+        for(int i = 0; i < DATA_SIZE; i++) {
+            data[i] = 0;
+        }
+        changedIndex = -1;
+    }
 }

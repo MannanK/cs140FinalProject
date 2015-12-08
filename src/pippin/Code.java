@@ -23,15 +23,18 @@ public class Code {
 	}
 
 	public int getOp(int i) {
+		if(i < 0 || i >= nextCodeLocation) {
+			throw new CodeAccessException("Attempt to access code outside its bounds");
+		}
 		return (int)(code[i] >> 32);
 	}
 
 	public void clear() {
-		nextCodeLocation = 0;
-		for(int i=0; i < code.length; i++) {
-			code[i] = 0;
-		}
-	}
+        for(int i = 0; i < CODE_MAX; i++) {
+            code[i] = 0;
+        }
+        nextCodeLocation = 0;
+    }
 
 	public String getText(int i) {
 		StringBuilder builder = new StringBuilder();

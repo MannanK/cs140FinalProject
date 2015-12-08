@@ -954,9 +954,12 @@ public class InstructionTester {
 	// this test checks whether the copy gives out of bounds exception as expected
 	public void testCOPYexcep() {
 		Instruction instr = machine.get(0x1D);
-		machine.setData(5000, 4);
+		machine.setData(4, 7);
+		machine.setData(511, 4);
+		machine.setData(512, 1);
+		machine.setData(513, 1);
 
-		int arg = 5000; 
+		int arg = 511; 
 		machine.setAccumulator(200);
 		instr.execute(arg); 
 	}

@@ -10,6 +10,7 @@ public class MachineModel extends Observable {
 	private Memory memory = new Memory();
 	private boolean withGUI = false;
 	private Code code = new Code();
+	private boolean running = false;
 
 	public class Registers {
 		private int accumulator;
@@ -223,13 +224,13 @@ public class MachineModel extends Observable {
 	public Instruction get(Object key) {
 		return INSTRUCTIONS.get(key);
 	}
-	int[] getData() {
+	public int[] getData() {
 		return memory.getData();
 	}
-	int getProgramCounter() {
+	public int getProgramCounter() {
 		return cpu.programCounter;
 	}
-	int getAccumulator() {
+	public int getAccumulator() {
 		return cpu.accumulator;
 	}
 	void setAccumulator(int i) {
@@ -241,7 +242,8 @@ public class MachineModel extends Observable {
 
 	void halt() {
 		if(withGUI) {
-			//code to come here later
+			running = false;
+			
 		} else {
 			System.exit(0);
 		}
@@ -268,7 +270,7 @@ public class MachineModel extends Observable {
 	 * locations to overlap. Takes values in memory in source range and copies them to 
 	 * memory locations specified in target range. The exception IllegalArgumentException 
 	 * is thrown if the source or target range of locations includes the indices arg thru
-	 * arg+1, or if the source range or target ranges go out of the memory addresses.
+	 * arg+2, or if the source range or target ranges go out of the memory addresses.
 	 * @param arg the initial memory location to look at, contains value for source, allows
 	 * code to look up value for target location and length as well
 	 */
@@ -276,8 +278,8 @@ public class MachineModel extends Observable {
 		int source = memory.getData(arg);
 		int target = memory.getData(arg+1);
 		int length = memory.getData(arg+2);
-		int sLength = source+length;
-		int tLength = target+length;
+		int sLength = source+length-1;
+		int tLength = target+length-1;
 		int maxAddress = Memory.DATA_SIZE-1;
 
 		/*if((source >= arg && source <= arg+2) || (target >= arg && target <= arg+2)) {
@@ -290,8 +292,8 @@ public class MachineModel extends Observable {
 			
 			throw new IllegalArgumentException("The instruction would corrupt arg");
 
-		} else if(source <= 0 || source >= maxAddress || sLength <= 0 || sLength >= maxAddress 
-				|| target <= 0 || target >= maxAddress || tLength <= 0 || tLength >= maxAddress) {
+		} else if(source < 0 || source > maxAddress || sLength < 0 || sLength > maxAddress 
+				|| target < 0 || target > maxAddress || tLength < 0 || tLength > maxAddress) {
 			
 			throw new IllegalArgumentException("The source range or target ranges go out"
 					+ "of the memory addresses");
@@ -301,16 +303,41 @@ public class MachineModel extends Observable {
 			target = target+length-1;
 
 			for(int i=0; i < length; i++) {
-				memory.setData(target, memory.getData(source));
-				target--;
-				source--;
+				memory.setData(target - i, memory.getData(source - i));
 			}
 		} else {
 			for(int i=0; i < length; i++) {
-				memory.setData(target, memory.getData(source));
-				target++;
-				source++;
+				memory.setData(target + i, memory.getData(source + i));
 			}
 		}
+	}
+	
+	public void step() {
+		try {
+			int pc = cpu.programCounter;
+			int opcode = code.getOp(pc);
+			int arg = code.getArg(pc);
+			get(opcode).execute(arg);
+		} catch (Exception e) {
+			halt();
+			throw e;
+		}
+		
+	}
+	
+	public void clear() {
+		memory.clear();
+		code.clear();
+		cpu.accumulator = 0;
+		cpu.programCounter = 0;
+		
+	}
+	
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+	
+	public boolean isRunning() {
+		return running;
 	}
 }

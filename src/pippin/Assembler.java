@@ -47,10 +47,10 @@ public class Assembler {
 				String line = inp.nextLine();
 				currentLine++;
 
-				if(line.trim().length() == 0 && firstBlankLine == 0) {
+				if(line.trim().length() == 0 && blankFound == false) {
 					firstBlankLine = currentLine;
 					blankFound = true;
-				} else if(line.trim().length() == 0 && currentLine > firstBlankLine) {
+				} else if(line.trim().length() == 0 && blankFound == true) {
 					error.append("Illegal blank line in the source file");
 					retVal = firstBlankLine;        			
 				} else if(line.charAt(0) == ' ' || line.charAt(0) == '\t') {
@@ -93,13 +93,16 @@ public class Assembler {
 
 					if(!InstructionMap.opcode.containsKey(parts[0].toUpperCase())) {
 						error.append("Error on line " + (i+1) + ": illegal mnemonic");
+						retVal = i+1;
 					} else if(!parts[0].equals(parts[0].toUpperCase())) {
 						error.append("Error on line " + (i+1) + ": mnemonic must be "
 								+ "upper case");
+						retVal = i+1;
 					} else if(noArgument.contains(parts[0])) {
 						if(parts.length > 1) {
 							error.append("Error on line " + (i+1) + 
 									": this mnemonic cannot take arguments");
+							retVal = i+1;
 						} else {
 							outputCode.add(Integer.toString
 									(InstructionMap.opcode.get(parts[0]), 16) + " 0");
@@ -108,9 +111,11 @@ public class Assembler {
 						if(parts.length > 2) {
 							error.append("Error on line " + (i+1) + 
 									": this mnemonic has too many arguments");
+							retVal = i+1;
 						} else if(parts.length == 1) {
 							error.append("Error on line " + (i+1) + 
-									": this mnemonic a missing arguments");
+									": this mnemonic is missing arguments");
+							retVal = i+1;
 						} else {
 							try {
 								int arg = Integer.parseInt(parts[1],16);
@@ -119,6 +124,7 @@ public class Assembler {
 							} catch(NumberFormatException e) {
 								error.append("Error on line " + (i+1) + 
 										": argument is not a hex number");
+								retVal = i+1;
 							}
 						}
 					}
@@ -130,20 +136,20 @@ public class Assembler {
 					String[] parts = inputData.get(i).split("\\s+");
 
 					if(parts.length != 2) {
-						error.append("Error on line " + (i+1) + 
+						error.append("Error on line " + (outputCode.size()+i+2) + 
 								": this data is missing arguments");
+						retVal = outputCode.size()+i+2;
 					} else {
-						//for 11 not getting a hexadecimal
 						try {
 							int arg1 = Integer.parseInt(parts[0],16);
 							int arg2 = Integer.parseInt(parts[1],16);
-							//outputData.add(inputData.get(i));
 							
 							outputData.add(Integer.toString(arg1, 16)
 									+ " " + Integer.toString(arg2, 16));
 						} catch(NumberFormatException e) {
-							error.append("Error on line " + (i+1) + 
+							error.append("Error on line " + (outputCode.size()+i+2) + 
 									": data integer(s) is not a hex number");
+							retVal = outputCode.size()+i+2;
 						}
 					}
 				}

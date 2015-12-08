@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class Loader {
     public static String load(MachineModel model, File file) {
+    	if(model == null || file == null) return null;
+    	
         try (Scanner input = new Scanner(file)) {
         	boolean readingCode = true;
         	

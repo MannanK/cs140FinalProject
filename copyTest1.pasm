@@ -1,0 +1,9 @@
+COPY 3
+HALT
+ENDCODE
+0 1
+1 C
+2 7
+3 0
+4 8
+5 3

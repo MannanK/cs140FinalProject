@@ -1,0 +1,4 @@
+#File locations
+#Tue Dec 08 01:00:30 EST 2015
+ExecutableDirectory=D\:/Mannan's Folder/College/2. Sophomore Year/Fall 2015/CS 140 - Programming With Objects/Final Project - GitHub/Final-Project/pexe/
+SourceDirectory=D\:/Mannan's Folder/College/2. Sophomore Year/Fall 2015/CS 140 - Programming With Objects/Final Project - GitHub/Final-Project/pasm/

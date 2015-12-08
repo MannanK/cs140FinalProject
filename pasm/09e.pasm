@@ -1,0 +1,4 @@
+DIV 5 	
+ENDCODE
+5 0
+NOT

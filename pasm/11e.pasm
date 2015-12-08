@@ -1,0 +1,5 @@
+NOT 5
+NOP a
+HALT 7
+ENDCODE
+7 0
