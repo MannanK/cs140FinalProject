@@ -50,9 +50,12 @@ public class Assembler {
 				if(line.trim().length() == 0 && blankFound == false) {
 					firstBlankLine = currentLine;
 					blankFound = true;
+				} else if(line.trim().length() != 0 && blankFound == true) {
+					error.append("Illegal blank line in the source file");
+					retVal = firstBlankLine;
 				} else if(line.trim().length() == 0 && blankFound == true) {
 					error.append("Illegal blank line in the source file");
-					retVal = firstBlankLine;        			
+					retVal = firstBlankLine;
 				} else if(line.charAt(0) == ' ' || line.charAt(0) == '\t') {
 					error.append("Line starts with illegal white space");
 					retVal = currentLine;
